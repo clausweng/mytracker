@@ -25,6 +25,13 @@ You are an expert full-stack engineer working on an offline-first **Exercise Tra
 - Use `ilike(exercises.name, \`%${query}%\`)` for autocomplete.
 - Exercises filter logic: return `status = 'APPROVED'` OR `created_by_user_id = :userId`.
 
+## Database Migrations (Drizzle Kit)
+- Use **Drizzle Kit** to generate and run all database migrations; never hand-write SQL migrations or alter schema directly in the database.
+- Define schema changes in `apps/api/src/app/database/schema/` first, then run `drizzle-kit generate` to produce the migration files.
+- Store generated migrations in `apps/api/src/app/database/migrations/` and commit them alongside the schema change.
+- Apply migrations via `drizzle-kit migrate` (or the project's configured migrate script) as part of deployment/CI; never rely on `drizzle-kit push` for production environments.
+- Keep `drizzle.config.ts` at the `apps/api` root, pointing to the schema and migrations folders and reading DB connection details from environment variables.
+
 ## Offline Sync & Idempotency
 - Batch sync endpoints (`POST /api/v1/logs/sync`) must handle upserts using `clientLogId` to prevent duplicate counts during network retries.
 
