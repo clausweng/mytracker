@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: exercise-tracker-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-exercise_tracker}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-exercise_tracker}
+      POSTGRES_DB: ${DB_NAME:-exercise_tracker}
+    ports:
+      - '${DB_PORT:-5432}:5432'
+    volumes:
+      - exercise-tracker-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-exercise_tracker}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  exercise-tracker-postgres-data:

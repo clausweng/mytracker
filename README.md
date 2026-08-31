@@ -24,19 +24,47 @@ See `.github/copilot-instructions.md` and `.github/instructions/` for detailed d
 npm install
 ```
 
-### Start the backend API
-```bash
-npx nx serve @exercise-tracker/api
-```
-The API starts in watch mode at `http://localhost:3000/api` (restarts automatically on file
-changes).
+## Backend (`apps/api`)
 
-### Build the backend API
-```bash
-npx nx build @exercise-tracker/api
-```
-Production output is written to `apps/api/dist`; run it with `node apps/api/dist/main.js`.
+### Prerequisites
+- Docker (for the PostgreSQL 16 container)
 
-> Note: database connectivity (PostgreSQL via Docker Compose + Drizzle ORM) is not wired up
-> yet — see `/implementations/0001_backend_foundation.md` for the current implementation
-> status and remaining steps.
+### Set up and run
+```bash
+cp .env.example .env               # dummy dev secrets, DATABASE_URL, OAuth placeholders
+docker compose up -d postgres      # PostgreSQL 16 on localhost:5432
+npx nx run api:db-migrate          # apply Drizzle migrations
+npx nx run api:db-seed             # insert the baseline APPROVED exercises
+npx nx serve api                   # watch mode on http://localhost:3000
+```
+
+- REST API: `http://localhost:3000/api/v1` (single global prefix, no URI versioning)
+- Swagger UI: `http://localhost:3000/api/docs` (OpenAPI JSON at `/api/docs-json`)
+- Health probe: `http://localhost:3000/api/v1/health`
+
+### Build
+```bash
+npx nx build api
+node -r dotenv/config apps/api/dist/main.js
+```
+
+### Quality gates
+```bash
+npx nx run-many -t lint build --projects=api,shared-types
+npx nx test api --coverage        # Jest, 80% global coverage thresholds
+```
+Unit tests mock the Drizzle client; the e2e suites in `apps/api/src/test/e2e/` require the
+migrated and seeded local database to be running. CI runs the same gates on GitHub Actions
+(`.github/workflows/ci.yml`).
+
+### Available Nx targets
+| Target | Purpose |
+| --- | --- |
+| `api:serve` | Run the API in watch mode |
+| `api:build` | Production build into `apps/api/dist` |
+| `api:db-generate` | Generate a Drizzle migration from the schema |
+| `api:db-migrate` | Apply pending migrations |
+| `api:db-seed` | Seed the baseline exercise catalogue |
+| `api:test` / `api:lint` | Jest suites / ESLint |
+
+See `/implementations/0001_backend_foundation.md` for the full backend increment plan.

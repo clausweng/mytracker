@@ -63,6 +63,40 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
 
+## Angular Material
+
+- Use Angular Material as the UI component library; do not hand-roll components that Material
+  already provides (buttons, form fields, cards, lists, dialogs, snackbars, bottom sheets,
+  toolbars, chips, tables, datepicker, autocomplete, progress spinner).
+- Import Material component modules directly in each standalone component's `imports` array
+  (e.g. `MatButtonModule`, `MatCardModule`) — never a shared "MaterialModule" barrel, so unused
+  components are tree-shaken from the bundle.
+- Define the app theme once via `@use '@angular/material' as mat;` and `mat.theme(...)` (Material
+  3) in `apps/web/src/styles.scss`. Do not redefine colors/typography ad hoc in feature SCSS —
+  reference theme tokens (`--mat-sys-*` CSS custom properties) instead.
+- Support light/dark themes with `prefers-color-scheme`; never hardcode colors that bypass the
+  theme.
+- Use `MatSnackBar` for transient feedback (e.g. sync/save confirmations, errors), `MatDialog` for
+  blocking confirmations, and `MatBottomSheet` for mobile-friendly quick-entry flows (e.g. adding
+  reps) instead of custom modal implementations.
+- Wrap `MatSnackBar`/`MatDialog`/`MatBottomSheet` usage behind a small injectable
+  `NotificationService`/`DialogService` (`providedIn: 'root'`) rather than injecting them directly
+  in every component.
+- Pair `mat-form-field` with `mat-error` and `matInput`/`formControlName` for all Reactive Forms;
+  never bypass form-field validation styling with custom error markup.
+- Provide `provideAnimationsAsync()` in `app.config.ts`; do not import the synchronous
+  `BrowserAnimationsModule`.
+- Respect the built-in ≥48px Material touch target sizing; do not override `mat-button`/`mat-icon-button`
+  dimensions to shrink tap targets below Material's defaults.
+- Material components already meet WCAG AA out of the box (focus indicators, ARIA roles,
+  keyboard navigation) — do not strip or override their built-in `aria-*` attributes, roles, or
+  focus styles.
+- Use CDK primitives (`@angular/cdk/drag-drop`, `@angular/cdk/overlay`, `@angular/cdk/a11y`) for
+  custom interactions (e.g. reordering standard exercises) instead of building drag/focus-trap
+  logic from scratch.
+- In unit tests, prefer `@angular/cdk/testing` component harnesses (e.g. `MatButtonHarness`) over
+  querying Material's internal DOM structure directly.
+
 ## Mobile-First & PWA UI
 
 - Layouts must be mobile-first and touch-friendly (large tap targets for "+ Reps" counters).

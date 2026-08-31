@@ -49,3 +49,7 @@ Thumbs.db
 __screenshots__/
 
 test-output
+
+# environment variables
+.env
+.env.local

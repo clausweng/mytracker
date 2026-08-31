@@ -65,40 +65,55 @@ lint, test (≥80% coverage), and build.
    `@exercise-tracker/shared-types` alias via npm workspaces, ESLint (flat config per
    project), Jest, and TS strict mode. Verified `api`/`web`/`shared-types` all build and lint,
    and that `apps/api` correctly resolves an import from `@exercise-tracker/shared-types`.
-2. **shared-types** — Define enums, domain models, and request/response contracts in
+2. **shared-types** ✅ — Define enums, domain models, and request/response contracts in
    `libs/shared-types/src/lib/*.ts` and export from `index.ts`. Log contracts include
    `clientLogId`, `exerciseId`, `reps`, `logDate`, `clientTimestamp`.
-3. **infra-docker** — `docker-compose.yml` with Postgres 16, `.env.example`, config module
+3. **infra-docker** ✅ — `docker-compose.yml` with Postgres 16, `.env.example`, config module
    with validated environment variables.
-4. **drizzle-setup** — Install Drizzle + `pg`, create `apps/api/drizzle.config.ts`, the
+4. **drizzle-setup** ✅ — Install Drizzle + `pg`, create `apps/api/drizzle.config.ts`, the
    `DatabaseModule` exposing the `DRIZZLE_DB` DI token, and the migration scripts.
-5. **db-schema** — Implement all tables and relations in
+5. **db-schema** ✅ — Implement all tables and relations in
    `apps/api/src/app/database/schema/`, then generate the initial migration into
    `apps/api/src/app/database/migrations/`.
-6. **seed-exercises** — Seed script inserting a catalogue of APPROVED baseline exercises
+6. **seed-exercises** ✅ — Seed script inserting a catalogue of APPROVED baseline exercises
    (push-ups, pull-ups, squats, sit-ups, …).
-7. **auth-module** — Local register/login, argon2 hashing, JWT access + rotating refresh
+7. **auth-module** ✅ — Local register/login, argon2 hashing, JWT access + rotating refresh
    tokens, hint-question password reset, `JwtAuthGuard`, `@CurrentUser()` decorator.
-8. **oauth-module** — Google and Facebook Passport strategies, account linking through
+8. **oauth-module** ✅ — Google and Facebook Passport strategies, account linking through
    `auth_providers`, callback issuing the JWT pair.
-9. **exercises-module** — Autocomplete search (`ilike`), visibility filter
+9. **exercises-module** ✅ — Autocomplete search (`ilike`), visibility filter
    (APPROVED OR own), user submission creating PENDING records, user standard-exercise list
    management.
-10. **days-module** — Create/fetch day sessions, return the day's exercises with accumulated
+10. **days-module** ✅ — Create/fetch day sessions, return the day's exercises with accumulated
     reps per exercise.
-11. **logs-module** — Single rep log creation returning the day's accumulated total, plus the
+11. **logs-module** ✅ — Single rep log creation returning the day's accumulated total, plus the
     idempotent `POST /logs/sync` batch upsert on `clientLogId`.
-12. **stats-module** — Period resolution (week/month/year/since) and aggregation queries
+12. **stats-module** ✅ — Period resolution (week/month/year/since) and aggregation queries
     with `sum()` / `date_trunc()`.
-13. **swagger-bootstrap** — Global `ValidationPipe`, versioned `/api/v1` prefix, CORS,
+13. **swagger-bootstrap** ✅ — Global `ValidationPipe`, versioned `/api/v1` prefix, CORS,
     Helmet, exception filter, Swagger document at `/api/docs`.
-14. **tests** — Unit tests per service/controller and e2e tests for auth, sync idempotency,
+14. **tests** ✅ — Unit tests per service/controller and e2e tests for auth, sync idempotency,
     and stats; enforce ≥80% coverage thresholds in the Jest config.
-15. **ci-pipeline** — `.gitlab-ci.yml` with install → lint → test (Postgres service) →
-    build stages using Nx affected commands.
-16. **docs** — Keep this document and `README.md` up to date as each step completes.
+15. **ci-pipeline** ✅ — `.github/workflows/ci.yml` with install → migrate → seed → lint →
+    build → test stages, using a `postgres:16-alpine` service container.
+16. **docs** ✅ — Keep this document and `README.md` up to date as each step completes.
 
 ## Notes & considerations
+- CI runs on **GitHub Actions** (`.github/workflows/ci.yml`), not GitLab CI as originally
+  drafted, because the repository remote is GitHub. The pipeline provisions a
+  `postgres:16-alpine` service container, applies migrations and the seed, then runs
+  `lint`/`build` for `api` + `shared-types` and the API test suite with coverage.
+- API versioning is expressed with a single global prefix (`app.setGlobalPrefix('api/v1')`)
+  rather than `VersioningType.URI`: there is exactly one version in this increment.
+- Admin gating required a `role` column on `users` (plus the `user_role` enum and migration
+  `0001_talented_forge.sql`) and a `UserRole` enum in `shared-types`; the role travels as a
+  JWT claim checked by a lightweight `RolesGuard`.
+- Jest uses the **V8 coverage provider**: the istanbul provider counts the
+  `typeof X === 'undefined' ? Object : X` ternaries emitted by swc for
+  `emitDecoratorMetadata` as permanently half-covered branches, which made the 80% branch
+  threshold unreachable regardless of test quality.
+- Unit tests use a chainable Drizzle fake (`apps/api/src/test/drizzle-mock.ts`) and never
+  touch a database; the e2e suites (`apps/api/src/test/e2e/`) run against real Postgres.
 - Exercise moderation: no admin UI in this increment. New exercises land as `PENDING` and are
   visible only to their creator; an approval endpoint guarded by an admin role is included so
   moderation is possible via API.
