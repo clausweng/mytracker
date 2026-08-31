@@ -6,7 +6,7 @@ import { configureApp, GLOBAL_PREFIX, SWAGGER_PATH } from './app/bootstrap.js';
 
 async function bootstrap(): Promise<void> {
   const app = configureApp(await NestFactory.create(AppModule));
-  const port = app.get(ConfigService).get<number>('PORT') ?? 3000;
+  const port = app.get(ConfigService).get<number>('API_PORT') ?? 3000;
 
   await app.listen(port);
 

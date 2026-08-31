@@ -24,6 +24,18 @@ See `.github/copilot-instructions.md` and `.github/instructions/` for detailed d
 npm install
 ```
 
+### Run the full stack (quick start)
+```bash
+cp .env.example .env               # dummy dev secrets, DATABASE_URL, OAuth placeholders
+docker compose up -d postgres      # PostgreSQL 16 on localhost:5432
+npx nx run api:db-migrate          # apply Drizzle migrations
+npx nx run api:db-seed             # insert the baseline APPROVED exercises
+npx nx serve api                   # terminal 1 — API on http://localhost:3000
+npx nx serve web                   # terminal 2 — PWA on http://localhost:4200
+```
+Open `http://localhost:4200`. The web app proxies `/api/v1/*` to the API, so both must be
+running. See the sections below for build/test commands and per-app details.
+
 ## Backend (`apps/api`)
 
 ### Prerequisites

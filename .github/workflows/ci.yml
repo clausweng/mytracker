@@ -19,7 +19,7 @@ jobs:
     # container below, never against a real environment.
     env:
       NODE_ENV: test
-      PORT: '3000'
+      API_PORT: '3000'
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/exercise_tracker
       JWT_ACCESS_SECRET: ci-access-secret
       JWT_REFRESH_SECRET: ci-refresh-secret
