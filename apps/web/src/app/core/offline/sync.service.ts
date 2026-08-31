@@ -1,10 +1,16 @@
 import { Injectable, effect, inject, signal } from '@angular/core';
-import { SyncEntryStatus } from '@exercise-tracker/shared-types';
+import { SyncEntryStatus, type LogEntryContract } from '@exercise-tracker/shared-types';
 import { ConnectivityService } from '../ui/connectivity.service';
 import { OutboxRepository } from './outbox.repository';
 import { LogsApiService } from '../../features/day/logs-api.service';
 
 const MAX_ATTEMPTS_BEFORE_BACKOFF_LOG = 5;
+
+/** Strips outbox-only bookkeeping fields so the API's whitelist validation accepts the payload. */
+function toLogEntryContract(entry: LogEntryContract): LogEntryContract {
+  const { clientLogId, exerciseId, reps, logDate, clientTimestamp } = entry;
+  return { clientLogId, exerciseId, reps, logDate, clientTimestamp };
+}
 
 /**
  * Flushes the offline outbox through the idempotent `POST /logs/sync`
@@ -46,7 +52,7 @@ export class SyncService {
 
     this.syncing.set(true);
     try {
-      const response = await this.logsApi.sync(entries);
+      const response = await this.logsApi.sync(entries.map(toLogEntryContract));
       for (const result of response.results) {
         if (result.status === SyncEntryStatus.IGNORED) {
           await this.outbox.recordFailure(result.clientLogId, 'Rejected by server (ignored).');
