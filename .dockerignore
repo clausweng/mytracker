@@ -1,0 +1,14 @@
+node_modules
+**/node_modules
+dist
+apps/**/dist
+libs/**/dist
+apps/api/test-output
+.git
+.nx
+.angular
+coverage
+*.log
+.env
+.vscode
+.idea

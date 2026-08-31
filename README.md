@@ -129,3 +129,28 @@ engine, and the app shell.
   `PATCH /users/me/exercises/reorder` endpoint yet, so the order isn't persisted across reloads.
 
 See `/implementations/0002_frontend_pwa.md` for the full frontend increment plan.
+
+## Run everything with Docker Compose
+
+Builds and runs the whole system — PostgreSQL, the NestJS API, a one-off migrate/seed job, and
+the Angular PWA served by nginx (which reverse-proxies `/api/v1/*` to the API, same as the dev
+proxy) — with no local Node.js install required.
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+- Web app: `http://localhost:${WEB_PORT:-8080}`
+- API directly: `http://localhost:3000/api/v1` (Swagger: `http://localhost:3000/api/docs`)
+
+Services:
+| Service | Image | Purpose |
+| --- | --- | --- |
+| `postgres` | `postgres:16-alpine` | Database, healthchecked with `pg_isready` |
+| `migrate` | built from `apps/api/Dockerfile` (`target: migrate`) | Runs `drizzle-kit migrate` then the idempotent exercise seed; exits when done |
+| `api` | built from `apps/api/Dockerfile` (`target: runtime`) | NestJS API; waits for `migrate` to finish, healthchecked at `/api/v1/health` |
+| `web` | built from `apps/web/Dockerfile` | Production Angular build served by nginx; waits for `api` to be healthy |
+
+Set `WEB_PORT` in `.env` if `8080` is already taken on your host. Stop everything with
+`docker compose down` (add `-v` to also drop the Postgres volume).

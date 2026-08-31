@@ -17,5 +17,65 @@ services:
       timeout: 5s
       retries: 10
 
+  # One-off job: applies Drizzle migrations then seeds the baseline
+  # (APPROVED) exercise catalogue. Idempotent — safe to run on every `up`.
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: migrate
+    environment:
+      DATABASE_URL: postgres://${DB_USER:-exercise_tracker}:${DB_PASSWORD:-exercise_tracker}@postgres:5432/${DB_NAME:-exercise_tracker}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: 'no'
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: runtime
+    container_name: exercise-tracker-api
+    restart: unless-stopped
+    environment:
+      API_PORT: 3000
+      NODE_ENV: production
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
+      DATABASE_URL: postgres://${DB_USER:-exercise_tracker}:${DB_PASSWORD:-exercise_tracker}@postgres:5432/${DB_NAME:-exercise_tracker}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change-me-access-secret}
+      JWT_ACCESS_TTL: ${JWT_ACCESS_TTL:-15m}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-me-refresh-secret}
+      JWT_REFRESH_TTL: ${JWT_REFRESH_TTL:-30d}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL:-}
+      FACEBOOK_CLIENT_ID: ${FACEBOOK_CLIENT_ID:-}
+      FACEBOOK_CLIENT_SECRET: ${FACEBOOK_CLIENT_SECRET:-}
+      FACEBOOK_CALLBACK_URL: ${FACEBOOK_CALLBACK_URL:-}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - '3000:3000'
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--spider', 'http://localhost:3000/api/v1/health']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: exercise-tracker-web
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - '${WEB_PORT:-8080}:80'
+
 volumes:
   exercise-tracker-postgres-data:
