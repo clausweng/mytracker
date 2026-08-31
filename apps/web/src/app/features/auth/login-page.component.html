@@ -1,0 +1,50 @@
+<div class="auth-page">
+  <mat-card class="auth-card">
+    <mat-card-header>
+      <mat-card-title>Log in</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Username</mat-label>
+          <input matInput formControlName="username" autocomplete="username" required />
+          @if (form.controls.username.invalid && form.controls.username.touched) {
+            <mat-error>Username is required.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" formControlName="password" autocomplete="current-password" required />
+          @if (form.controls.password.invalid && form.controls.password.touched) {
+            <mat-error>Password is required.</mat-error>
+          }
+        </mat-form-field>
+
+        <button mat-flat-button color="primary" class="full-width" type="submit" [disabled]="submitting()">
+          @if (submitting()) {
+            <mat-progress-spinner diameter="20" mode="indeterminate" aria-label="Signing in" />
+          } @else {
+            Log in
+          }
+        </button>
+      </form>
+
+      <div class="auth-links">
+        <a routerLink="/auth/forgot-password">Forgot password?</a>
+        <a routerLink="/auth/register">Create an account</a>
+      </div>
+
+      <div class="oauth-divider" role="separator">or</div>
+
+      <a mat-stroked-button class="full-width oauth-button" [href]="oauthUrls.google">
+        <mat-icon aria-hidden="true">g_mobiledata</mat-icon>
+        Continue with Google
+      </a>
+      <a mat-stroked-button class="full-width oauth-button" [href]="oauthUrls.facebook">
+        <mat-icon aria-hidden="true">facebook</mat-icon>
+        Continue with Facebook
+      </a>
+    </mat-card-content>
+  </mat-card>
+</div>

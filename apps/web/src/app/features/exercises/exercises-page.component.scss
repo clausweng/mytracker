@@ -1,0 +1,24 @@
+.exercises-page {
+  padding: 1rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+h1 {
+  font: var(--mat-sys-title-large);
+}
+
+h2 {
+  font: var(--mat-sys-title-medium);
+  margin-top: 1.5rem;
+}
+
+.empty-state {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.draggable-item {
+  min-height: var(--app-touch-target);
+}

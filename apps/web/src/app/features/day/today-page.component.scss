@@ -1,0 +1,37 @@
+.today-page {
+  padding: 1rem;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font: var(--mat-sys-title-large);
+  margin: 0;
+}
+
+.empty-state {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.exercise-card h2 {
+  font: var(--mat-sys-title-medium);
+  margin: 0 0 0.25rem;
+}
+
+.exercise-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}

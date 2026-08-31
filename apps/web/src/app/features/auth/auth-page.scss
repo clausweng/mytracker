@@ -1,0 +1,48 @@
+.auth-page {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+button.full-width {
+  min-height: var(--app-touch-target);
+  margin-top: 0.5rem;
+}
+
+.auth-links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+}
+
+.oauth-divider {
+  text-align: center;
+  margin: 1rem 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.oauth-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: var(--app-touch-target);
+  margin-bottom: 0.5rem;
+  text-decoration: none;
+}

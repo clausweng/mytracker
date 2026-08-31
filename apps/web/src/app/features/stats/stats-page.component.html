@@ -1,0 +1,66 @@
+<div class="stats-page">
+  <h1>Statistics</h1>
+
+  <mat-button-toggle-group
+    class="period-toggle"
+    [value]="period()"
+    (change)="onPeriodChange($event.value)"
+    aria-label="Statistics period"
+  >
+    <mat-button-toggle [value]="StatsPeriod.WEEK">Week</mat-button-toggle>
+    <mat-button-toggle [value]="StatsPeriod.MONTH">Month</mat-button-toggle>
+    <mat-button-toggle [value]="StatsPeriod.YEAR">Year</mat-button-toggle>
+    <mat-button-toggle [value]="StatsPeriod.SINCE">Since…</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  @if (period() === StatsPeriod.SINCE) {
+    <mat-form-field appearance="outline" class="since-field">
+      <mat-label>Since date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        [ngModel]="since()"
+        (ngModelChange)="onSinceChange($event)"
+        aria-label="Since date"
+      />
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  }
+
+  @if (offline()) {
+    <p class="offline-note" role="status">Showing the last synced results (offline).</p>
+  }
+
+  @if (loading()) {
+    <p>Loading…</p>
+  } @else if (!response() || response()!.entries.length === 0) {
+    <p class="empty-state">No reps logged for this period yet.</p>
+  } @else {
+    <ul class="bar-list" aria-label="Total reps by exercise">
+      @for (entry of response()!.entries; track entry.exerciseId) {
+        <li class="bar-row">
+          <span class="bar-label">{{ entry.exerciseName }}</span>
+          <span class="bar-track" role="img" [attr.aria-label]="entry.exerciseName + ': ' + entry.totalReps + ' reps'">
+            <span class="bar-fill" [style.width.%]="barWidthPercent(entry.totalReps)"></span>
+          </span>
+          <span class="bar-value">{{ entry.totalReps }}</span>
+        </li>
+      }
+    </ul>
+
+    <table mat-table [dataSource]="response()!.entries" class="totals-table">
+      <caption class="cdk-visually-hidden">Total reps by exercise for the selected period</caption>
+      <ng-container matColumnDef="exerciseName">
+        <th mat-header-cell *matHeaderCellDef scope="col">Exercise</th>
+        <td mat-cell *matCellDef="let entry">{{ entry.exerciseName }}</td>
+      </ng-container>
+      <ng-container matColumnDef="totalReps">
+        <th mat-header-cell *matHeaderCellDef scope="col">Total reps</th>
+        <td mat-cell *matCellDef="let entry">{{ entry.totalReps }}</td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  }
+</div>

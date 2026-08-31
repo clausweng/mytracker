@@ -1,6 +1,10 @@
 # 0002 — Frontend PWA (apps/web)
 
-**Status:** Planned (todos tracked; implementation not started)
+**Status:** Implemented. All 13 todos complete; unit tests and production build passing.
+Known gaps carried into a future increment: no in-app `/auth/callback` route (API returns OAuth
+tokens as JSON rather than redirecting), and exercise drag-and-drop reorder is local-only
+(no reorder-persistence endpoint). See `README.md` → "Frontend (`apps/web`)" for run/build/test
+instructions.
 
 ## Problem
 `libs/shared-types` and the NestJS API (`/api/v1`) are complete, but `apps/web` is still the

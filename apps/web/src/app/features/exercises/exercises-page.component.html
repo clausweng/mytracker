@@ -1,0 +1,52 @@
+<div class="exercises-page">
+  <h1>Exercises</h1>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Find an exercise</mat-label>
+    <input
+      matInput
+      [formControl]="searchControl"
+      [matAutocomplete]="auto"
+      placeholder="e.g. push"
+      aria-label="Search exercises"
+    />
+    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayExerciseName" (optionSelected)="onExerciseSelected($event)">
+      @for (exercise of searchResults(); track exercise.id) {
+        <mat-option [value]="exercise">{{ exercise.name }}</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <button mat-stroked-button type="button" (click)="openSubmitDialog()">
+    <mat-icon aria-hidden="true">add</mat-icon>
+    Submit a new exercise
+  </button>
+
+  <h2>My standard exercises</h2>
+  @if (facade.loadingMyExercises()) {
+    <p>Loading…</p>
+  } @else if (facade.myExercises().length === 0) {
+    <p class="empty-state">No exercises yet — search above to add one.</p>
+  } @else {
+    <mat-list cdkDropList (cdkDropListDropped)="drop($event)" aria-label="Your standard exercises">
+      @for (entry of facade.myExercises(); track entry.exerciseId) {
+        <mat-list-item cdkDrag class="draggable-item">
+          <mat-icon matListItemIcon cdkDragHandle aria-hidden="true">drag_indicator</mat-icon>
+          <span matListItemTitle>{{ entry.exerciseName }}</span>
+          @if (entry.isStandard) {
+            <mat-chip matListItemMeta>Standard</mat-chip>
+          }
+          <button
+            matListItemMeta
+            mat-icon-button
+            type="button"
+            [attr.aria-label]="'Remove ' + entry.exerciseName"
+            (click)="removeExercise(entry.exerciseId)"
+          >
+            <mat-icon aria-hidden="true">close</mat-icon>
+          </button>
+        </mat-list-item>
+      }
+    </mat-list>
+  }
+</div>

@@ -1,0 +1,41 @@
+<div class="today-page">
+  <div class="header-row">
+    <h1>Today</h1>
+    <button mat-flat-button color="primary" type="button" (click)="startNewDay()">
+      <mat-icon aria-hidden="true">add_circle</mat-icon>
+      New day
+    </button>
+  </div>
+
+  @if (facade.loading()) {
+    <p>Loading…</p>
+  } @else if (!facade.day() || facade.day()!.exercises.length === 0) {
+    <p class="empty-state">
+      No exercises logged yet today. Press "New day" to start, then add reps below.
+    </p>
+  } @else {
+    <div class="exercise-list">
+      @for (exercise of facade.day()!.exercises; track exercise.exerciseId) {
+        <mat-card class="exercise-card">
+          <mat-card-content>
+            <div class="exercise-row">
+              <div>
+                <h2>{{ exercise.exerciseName }}</h2>
+                <p aria-live="polite">{{ exercise.accumulatedReps }} reps today</p>
+              </div>
+              <button
+                mat-fab
+                color="primary"
+                type="button"
+                [attr.aria-label]="'Add reps for ' + exercise.exerciseName"
+                (click)="openAddReps(exercise.exerciseId, exercise.exerciseName)"
+              >
+                <mat-icon aria-hidden="true">add</mat-icon>
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

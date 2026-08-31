@@ -1,0 +1,62 @@
+<div class="auth-page">
+  <mat-card class="auth-card">
+    <mat-card-header>
+      <mat-card-title>Create your account</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Username</mat-label>
+          <input matInput formControlName="username" autocomplete="username" required />
+          @if (form.controls.username.invalid && form.controls.username.touched) {
+            <mat-error>Choose a username of at least 3 characters.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Display name</mat-label>
+          <input matInput formControlName="displayName" autocomplete="name" required />
+          @if (form.controls.displayName.invalid && form.controls.displayName.touched) {
+            <mat-error>Display name is required.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" formControlName="password" autocomplete="new-password" required />
+          @if (form.controls.password.invalid && form.controls.password.touched) {
+            <mat-error>Password must be at least 8 characters.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Security question</mat-label>
+          <input matInput formControlName="hintQuestion" placeholder="e.g. What was your first pet's name?" required />
+          @if (form.controls.hintQuestion.invalid && form.controls.hintQuestion.touched) {
+            <mat-error>A security question is required to reset your password later.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Answer</mat-label>
+          <input matInput formControlName="hintAnswer" required />
+          @if (form.controls.hintAnswer.invalid && form.controls.hintAnswer.touched) {
+            <mat-error>An answer is required.</mat-error>
+          }
+        </mat-form-field>
+
+        <button mat-flat-button color="primary" class="full-width" type="submit" [disabled]="submitting()">
+          @if (submitting()) {
+            <mat-progress-spinner diameter="20" mode="indeterminate" aria-label="Creating account" />
+          } @else {
+            Create account
+          }
+        </button>
+      </form>
+
+      <div class="auth-links">
+        <a routerLink="/auth/login">Already have an account? Log in</a>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,68 @@
+.stats-page {
+  padding: 1rem;
+}
+
+h1 {
+  font: var(--mat-sys-title-large);
+}
+
+.period-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.since-field {
+  width: 100%;
+}
+
+.offline-note,
+.empty-state {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.bar-list {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 48px;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bar-label {
+  font-size: 0.875rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bar-track {
+  display: block;
+  height: 16px;
+  background: var(--mat-sys-surface-variant);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--mat-sys-primary);
+}
+
+.bar-value {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.totals-table {
+  width: 100%;
+}
