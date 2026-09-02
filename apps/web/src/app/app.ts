@@ -1,21 +1,18 @@
-import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, viewChild } from '@angular/core';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component, ElementRef, inject, viewChild } from '@angular/core';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSidenavModule, type MatSidenav } from '@angular/material/sidenav';
 import { ConnectivityService } from './core/ui/connectivity.service';
 import { AuthStore } from './core/auth/auth.store';
 import { SyncService } from './core/offline/sync.service';
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt(): Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
-}
+import { NavDrawerComponent } from './core/ui/nav-drawer/nav-drawer.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatIconModule, MatButtonModule],
+  imports: [RouterOutlet, MatToolbarModule, MatIconModule, MatButtonModule, MatSidenavModule, NavDrawerComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,7 +24,8 @@ export class App {
 
   private readonly router = inject(Router);
   private readonly mainContent = viewChild<ElementRef<HTMLElement>>('mainContent');
-  protected readonly deferredInstallPrompt = signal<BeforeInstallPromptEvent | null>(null);
+  private readonly drawer = viewChild<MatSidenav>('drawer');
+  private readonly menuButton = viewChild<ElementRef<HTMLButtonElement>>('menuButton');
 
   constructor() {
     // Move focus to the main landmark on every route change for screen-reader
@@ -35,22 +33,17 @@ export class App {
     this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe(() => this.mainContent()?.nativeElement.focus());
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener('beforeinstallprompt', (event) => {
-        event.preventDefault();
-        this.deferredInstallPrompt.set(event as BeforeInstallPromptEvent);
-      });
-    }
   }
 
-  async installApp(): Promise<void> {
-    const promptEvent = this.deferredInstallPrompt();
-    if (!promptEvent) {
-      return;
-    }
-    await promptEvent.prompt();
-    await promptEvent.userChoice;
-    this.deferredInstallPrompt.set(null);
+  async toggleDrawer(): Promise<void> {
+    await this.drawer()?.toggle();
+  }
+
+  async closeDrawer(): Promise<void> {
+    await this.drawer()?.close();
+  }
+
+  focusMenuButton(): void {
+    this.menuButton()?.nativeElement.focus();
   }
 }

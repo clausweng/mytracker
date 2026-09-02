@@ -1,12 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
 @use '@angular/material' as mat;
 
-html {
-  color-scheme: light dark;
+// Shared theme mixin so the light/dark palettes stay in sync between the OS
+// `prefers-color-scheme` baseline and the explicit `data-theme` override set
+// by `ThemeService`.
+@mixin app-theme($theme-type) {
   @include mat.theme(
     (
       color: (
-        theme-type: light,
+        theme-type: $theme-type,
         primary: mat.$azure-palette,
         tertiary: mat.$violet-palette,
       ),
@@ -16,17 +18,27 @@ html {
   );
 }
 
+html {
+  color-scheme: light dark;
+  @include app-theme(light);
+}
+
+// Explicit user preference (set via ThemeService) always wins over the OS setting.
+html[data-theme='dark'] {
+  color-scheme: dark;
+  @include app-theme(dark);
+}
+
+html[data-theme='light'] {
+  color-scheme: light;
+}
+
+// OS preference applies only when the user hasn't explicitly chosen 'light'.
+// This also covers the brief pre-hydration window before ThemeService runs.
 @media (prefers-color-scheme: dark) {
-  html {
-    @include mat.theme(
-      (
-        color: (
-          theme-type: dark,
-          primary: mat.$azure-palette,
-          tertiary: mat.$violet-palette,
-        ),
-      )
-    );
+  html:not([data-theme='light']) {
+    color-scheme: dark;
+    @include app-theme(dark);
   }
 }
 

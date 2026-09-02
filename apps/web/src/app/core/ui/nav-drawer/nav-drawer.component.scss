@@ -1,0 +1,40 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.drawer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 260px;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  min-height: var(--app-touch-target);
+}
+
+.drawer-header-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.active {
+  color: var(--mat-sys-primary);
+}
+
+.drawer-about {
+  margin-top: auto;
+  padding: 1rem;
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+}
