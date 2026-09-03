@@ -36,9 +36,10 @@ Offline-first strategy (the core architectural decision):
 Decisions taken:
 - **UI library**: **Angular Material** (`@angular/material` + `@angular/cdk` ~22.x) with a custom
   Material 3 theme built from `mat.theme()` in SCSS. Mobile-first (360–430px baseline),
-  ≥48px Material touch targets. Components used: toolbar, bottom nav (button toggle/tab bar),
-  card, list, form-field/input, autocomplete, button, fab, bottom-sheet, dialog, snackbar,
-  progress-spinner, datepicker (for the SINCE period), chips.
+  ≥48px Material touch targets. Components used: toolbar, sidenav (burger-menu drawer, superseded
+  the original bottom nav — see `0003_burger_menu_navigation.md`), card, list, form-field/input,
+  autocomplete, button, fab, bottom-sheet, dialog, snackbar, progress-spinner, datepicker (for the
+  SINCE period), chips.
 - **Statistics visualisation**: accessible in-house SVG/CSS bar list styled with Material theme
   tokens — no chart library.
 - **Auth transport**: access token kept in memory (signal) + refresh token in `localStorage`;
@@ -82,10 +83,12 @@ Decisions taken:
    Depends on web-auth-core, web-shell.
 
 6. **web-shell** — App shell: `App` root with router outlet, `mat-toolbar` header and a
-   bottom navigation bar (Today, Exercises, Stats, Profile), offline/sync status banner driven by
-   a `ConnectivityService`, Material 3 theme setup (`styles.scss` with `mat.theme()`, custom
-   palette, density and typography tokens, dark-mode via `prefers-color-scheme`), and a
-   `NotificationService` wrapping `MatSnackBar`. Removes `nx-welcome.ts`.
+   burger-menu `mat-sidenav` drawer (Today, Exercises, Stats, theme toggle, install app, about,
+   logout — see `0003_burger_menu_navigation.md`, superseding the original bottom navigation bar),
+   offline/sync status banner driven by a `ConnectivityService`, Material 3 theme setup
+   (`styles.scss` with `mat.theme()`, custom palette, density and typography tokens, dark-mode via
+   `prefers-color-scheme` plus an explicit `ThemeService` override), and a `NotificationService`
+   wrapping `MatSnackBar`. Removes `nx-welcome.ts`.
 
 7. **web-exercises** — Exercise feature: `ExerciseApiService` (`GET /exercises?query=`,
    `GET /exercises/mine`, `POST /exercises`) with a `mat-autocomplete` (300 ms debounce) that is

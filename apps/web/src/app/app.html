@@ -1,47 +1,50 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 
-@if (authStore.isAuthenticated()) {
-  <mat-toolbar color="primary">
-    <span>Exercise Tracker</span>
-  </mat-toolbar>
-}
+<mat-sidenav-container class="shell-container" [hasBackdrop]="true">
+  @if (authStore.isAuthenticated()) {
+    <mat-sidenav
+      #drawer
+      class="nav-drawer-panel"
+      position="end"
+      mode="over"
+      [fixedInViewport]="true"
+      (closed)="focusMenuButton()"
+    >
+      <app-nav-drawer (navigate)="closeDrawer()"></app-nav-drawer>
+    </mat-sidenav>
+  }
 
-@if (!connectivity.online()) {
-  <div class="offline-banner" role="status" aria-live="polite">
-    <mat-icon aria-hidden="true">cloud_off</mat-icon>
-    <span>You're offline. Your reps are saved and will sync automatically.</span>
-  </div>
-} @else if (sync.pendingCount() > 0) {
-  <div class="offline-banner syncing" role="status" aria-live="polite">
-    <mat-icon aria-hidden="true">sync</mat-icon>
-    <span>Syncing {{ sync.pendingCount() }} pending {{ sync.pendingCount() === 1 ? 'entry' : 'entries' }}…</span>
-  </div>
-}
+  <mat-sidenav-content>
+    @if (authStore.isAuthenticated()) {
+      <mat-toolbar color="primary">
+        <span class="toolbar-title">Exercise Tracker</span>
+        <span class="toolbar-spacer"></span>
+        <button
+          #menuButton
+          mat-icon-button
+          type="button"
+          aria-label="Open navigation menu"
+          (click)="toggleDrawer()"
+        >
+          <mat-icon aria-hidden="true">menu</mat-icon>
+        </button>
+      </mat-toolbar>
+    }
 
-<main id="main-content" #mainContent class="app-content" tabindex="-1">
-  <router-outlet></router-outlet>
-</main>
+    @if (!connectivity.online()) {
+      <div class="offline-banner" role="status" aria-live="polite">
+        <mat-icon aria-hidden="true">cloud_off</mat-icon>
+        <span>You're offline. Your reps are saved and will sync automatically.</span>
+      </div>
+    } @else if (sync.pendingCount() > 0) {
+      <div class="offline-banner syncing" role="status" aria-live="polite">
+        <mat-icon aria-hidden="true">sync</mat-icon>
+        <span>Syncing {{ sync.pendingCount() }} pending {{ sync.pendingCount() === 1 ? 'entry' : 'entries' }}…</span>
+      </div>
+    }
 
-@if (deferredInstallPrompt()) {
-  <div class="install-banner" role="status">
-    <span>Install Exercise Tracker for quick, offline access.</span>
-    <button mat-button type="button" (click)="installApp()">Install</button>
-  </div>
-}
-
-@if (authStore.isAuthenticated()) {
-  <nav class="bottom-nav" aria-label="Primary">
-    <a routerLink="/today" routerLinkActive="active" class="bottom-nav-link">
-      <mat-icon aria-hidden="true">today</mat-icon>
-      <span>Today</span>
-    </a>
-    <a routerLink="/exercises" routerLinkActive="active" class="bottom-nav-link">
-      <mat-icon aria-hidden="true">fitness_center</mat-icon>
-      <span>Exercises</span>
-    </a>
-    <a routerLink="/stats" routerLinkActive="active" class="bottom-nav-link">
-      <mat-icon aria-hidden="true">bar_chart</mat-icon>
-      <span>Stats</span>
-    </a>
-  </nav>
-}
+    <main id="main-content" #mainContent class="app-content" tabindex="-1">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
