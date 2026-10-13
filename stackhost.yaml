@@ -2,7 +2,7 @@
 # Angular production bundle, so the app and API share one origin.
 name: exercise-tracker
 runtime:
-  image: node:22
+  image: node:22.22.3
 commands:
   package: ''
   build:
