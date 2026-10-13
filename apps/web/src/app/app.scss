@@ -11,6 +11,15 @@
 
 .nav-drawer-panel {
   width: auto;
+  // Square off the drawer panel instead of Material's default rounded shape so it
+  // reads as an integrated part of the screen rather than a floating card.
+  --mat-sidenav-container-shape: 0;
+
+  @media (max-width: 480px) {
+    // Fill the full screen width on mobile/narrow viewports (matches the app's
+    // mobile-first baseline used for --app-max-content-width elsewhere).
+    width: 100%;
+  }
 }
 
 .toolbar-title {

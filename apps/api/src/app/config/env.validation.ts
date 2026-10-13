@@ -1,5 +1,13 @@
 import { IsIn, IsInt, IsOptional, IsString, IsUrl, Max, Min, validateSync } from 'class-validator';
-import { plainToInstance, Type } from 'class-transformer';
+import { plainToInstance, Transform, Type } from 'class-transformer';
+
+/**
+ * Docker Compose's `${VAR:-}` substitution yields an empty string (not
+ * `undefined`) when a variable is unset, which would otherwise fail
+ * `@IsOptional()` combined with format validators like `@IsUrl()`. Treat
+ * blank strings as "not provided".
+ */
+const emptyToUndefined = ({ value }: { value: unknown }) => (value === '' ? undefined : value);
 
 /**
  * Validated shape of process.env. `@nestjs/config` runs this validator once
@@ -33,26 +41,32 @@ export class EnvironmentVariables {
   @IsString()
   JWT_REFRESH_TTL = '30d';
 
+  @Transform(emptyToUndefined)
   @IsOptional()
   @IsString()
   GOOGLE_CLIENT_ID?: string;
 
+  @Transform(emptyToUndefined)
   @IsOptional()
   @IsString()
   GOOGLE_CLIENT_SECRET?: string;
 
+  @Transform(emptyToUndefined)
   @IsOptional()
   @IsUrl({ require_tld: false })
   GOOGLE_CALLBACK_URL?: string;
 
+  @Transform(emptyToUndefined)
   @IsOptional()
   @IsString()
   FACEBOOK_CLIENT_ID?: string;
 
+  @Transform(emptyToUndefined)
   @IsOptional()
   @IsString()
   FACEBOOK_CLIENT_SECRET?: string;
 
+  @Transform(emptyToUndefined)
   @IsOptional()
   @IsUrl({ require_tld: false })
   FACEBOOK_CALLBACK_URL?: string;

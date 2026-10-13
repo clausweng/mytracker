@@ -2,6 +2,9 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  // Stretch to whatever width the containing sidenav panel provides (including the
+  // full-width mobile breakpoint) — no rounded corners or gap-inducing rules here.
+  width: 100%;
 }
 
 .drawer {

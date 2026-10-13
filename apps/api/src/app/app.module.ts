@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { resolve } from 'node:path';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AppConfigModule } from './config/index.js';
 import { DatabaseModule } from './database/index.js';
@@ -18,6 +20,13 @@ import { HealthController } from './health/health.controller.js';
 @Module({
   imports: [
     AppConfigModule,
+    ServeStaticModule.forRoot({
+      rootPath: resolve(
+        process.cwd(),
+        process.env.WEB_DIST_PATH ?? 'dist/apps/web/browser',
+      ),
+      exclude: ['/api/{*path}'],
+    }),
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 10 }]),
     DatabaseModule,
     AuthModule,

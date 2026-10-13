@@ -33,6 +33,17 @@ describe('validateEnvironment', () => {
     expect(config.GOOGLE_CLIENT_ID).toBe('google-id');
   });
 
+  it('treats blank OAuth callback URLs (Docker Compose default) as unset', () => {
+    const config = validateEnvironment({
+      ...VALID,
+      GOOGLE_CALLBACK_URL: '',
+      FACEBOOK_CALLBACK_URL: '',
+    });
+
+    expect(config.GOOGLE_CALLBACK_URL).toBeUndefined();
+    expect(config.FACEBOOK_CALLBACK_URL).toBeUndefined();
+  });
+
   it('fails fast when a required variable is missing', () => {
     expect(() => validateEnvironment({ JWT_ACCESS_SECRET: 'access' })).toThrow(
       /Invalid environment configuration/,
