@@ -7,10 +7,10 @@ commands:
   package: ''
   build:
     - npm ci
-    - npx nx build shared-types
-    - npx nx build web --configuration=production
-    - npx nx build api --configuration=production
-  start: npx nx run api:db-migrate && npx nx run api:db-seed && node apps/api/dist/main.js
+    - node node_modules/nx/dist/bin/nx.js build shared-types
+    - node node_modules/nx/dist/bin/nx.js build web --configuration=production
+    - node node_modules/nx/dist/bin/nx.js build api --configuration=production
+  start: node node_modules/nx/dist/bin/nx.js run api:db-migrate && node node_modules/nx/dist/bin/nx.js run api:db-seed && node apps/api/dist/main.js
 port: 3000
 # Add these in the StackHost environment settings:
 # NODE_ENV=production, API_PORT=3000, and WEB_DIST_PATH=dist/apps/web/browser.
